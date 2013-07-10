@@ -29,6 +29,7 @@ abstract public class WakefulIntentService extends IntentService {
       "com.commonsware.cwac.wakeful.WakefulIntentService";
   static final String LAST_ALARM="lastAlarm";
   private static volatile PowerManager.WakeLock lockStatic=null;
+  public static String LISTENER_NAME = "listener_name";
 
   synchronized private static PowerManager.WakeLock getLock(Context context) {
     if (lockStatic == null) {
@@ -51,12 +52,12 @@ abstract public class WakefulIntentService extends IntentService {
     sendWakefulWork(ctxt, new Intent(ctxt, clsService));
   }
 
-  public static void scheduleAlarms(AlarmListener listener, Context ctxt) {
-    scheduleAlarms(listener, ctxt, true);
-  }
+//  public static void scheduleAlarms(AlarmListener listener, Context ctxt) {
+//    scheduleAlarms(listener, ctxt, true, );
+//  }
 
   public static void scheduleAlarms(AlarmListener listener,
-                                    Context ctxt, boolean force) {
+                                    Context ctxt, boolean force, String clsName) {
     SharedPreferences prefs=ctxt.getSharedPreferences(NAME, 0);
     long lastAlarm=prefs.getLong(LAST_ALARM, 0);
 
@@ -67,7 +68,9 @@ abstract public class WakefulIntentService extends IntentService {
       AlarmManager mgr=
           (AlarmManager)ctxt.getSystemService(Context.ALARM_SERVICE);
       Intent i=new Intent(ctxt, AlarmReceiver.class);
+      i.putExtra(LISTENER_NAME, clsName);
       PendingIntent pi=PendingIntent.getBroadcast(ctxt, 0, i, 0);
+     
 
       listener.scheduleAlarms(mgr, pi, ctxt);
     }
