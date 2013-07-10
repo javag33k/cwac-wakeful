@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
+import android.util.Log;
 
 abstract public class WakefulIntentService extends IntentService {
   abstract protected void doWakefulWork(Intent intent);
@@ -44,11 +45,14 @@ abstract public class WakefulIntentService extends IntentService {
   }
 
   public static void sendWakefulWork(Context ctxt, Intent i) {
+	  Log.i("WakefulIntentService", "STart of sendWakefulWork 1");
+
     getLock(ctxt.getApplicationContext()).acquire();
     ctxt.startService(i);
   }
 
   public static void sendWakefulWork(Context ctxt, Class<?> clsService) {
+	  Log.i("WakefulIntentService", "STart of sendWakefulWork 2");
     sendWakefulWork(ctxt, new Intent(ctxt, clsService));
   }
 
@@ -58,6 +62,8 @@ abstract public class WakefulIntentService extends IntentService {
 
   public static void scheduleAlarms(AlarmListener listener,
                                     Context ctxt, boolean force, String clsName) {
+	  
+	  Log.i("WakefulIntentService", "Start of scheduleAlarms");
     SharedPreferences prefs=ctxt.getSharedPreferences(NAME, 0);
     long lastAlarm=prefs.getLong(LAST_ALARM, 0);
 
@@ -71,6 +77,7 @@ abstract public class WakefulIntentService extends IntentService {
       i.putExtra(LISTENER_NAME, clsName);
       PendingIntent pi=PendingIntent.getBroadcast(ctxt, 0, i, 0);
      
+	  Log.i("WakefulIntentService", "Intent Created");
 
       listener.scheduleAlarms(mgr, pi, ctxt);
     }
